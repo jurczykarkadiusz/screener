@@ -3,36 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Scanner - Sorted & Ranked</title>
+    <title>Trading Scanner PRO - Nadajnik</title>
     <style>
         body { background-color: #0d1117; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; background-color: #161b22; }
-        th, td { border: 1px solid #30363d; padding: 10px; text-align: left; }
-        th { background-color: #21262d; position: sticky; top: 0; z-index: 10; }
+        h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; display: flex; justify-content: space-between; }
+        .status-tag { font-size: 12px; background: #238636; padding: 4px 8px; border-radius: 10px; }
         
-        /* Kolory tekstu wskaźników */
+        table { width: 100%; border-collapse: collapse; background-color: #161b22; margin-top: 10px; }
+        th, td { border: 1px solid #30363d; padding: 12px; text-align: left; }
+        th { background-color: #21262d; position: sticky; top: 0; }
+
+        /* Kolory tekstów */
         .strong-buy { color: #00ff00; font-weight: bold; }
         .buy { color: #81ef81; }
         .neutral { color: #8b949e; }
         .sell { color: #ff7b72; }
         .strong-sell { color: #ff0000; font-weight: bold; }
 
-        /* TŁA WIERSZY - LOGIKA SORTOWANIA */
-        /* 1. Najwyższy priorytet: 3x Strong */
-        .row-3-strong-buy { background-color: rgba(0, 255, 0, 0.4) !important; border-left: 6px solid #00ff00; }
-        .row-3-strong-sell { background-color: rgba(255, 0, 0, 0.4) !important; border-left: 6px solid #ff0000; }
+        /* WIERSZE SPEŁNIAJĄCE WARUNKI (DO SORTOWANIA) */
+        /* 3x Strong - Najwyższy priorytet (Intensywne) */
+        .row-3-strong-buy { background-color: rgba(0, 255, 0, 0.3) !important; border-left: 6px solid #00ff00; }
+        .row-3-strong-sell { background-color: rgba(255, 0, 0, 0.3) !important; border-left: 6px solid #ff0000; }
         
-        /* 2. Średni priorytet: 2x Strong (Summary + MA) */
-        .row-2-strong-buy { background-color: rgba(0, 255, 0, 0.15) !important; border-left: 4px solid #81ef81; }
-        .row-2-strong-sell { background-color: rgba(255, 0, 0, 0.15) !important; border-left: 4px solid #ff7b72; }
-        
+        /* 2x Strong (Summary + MA) - Średni priorytet (Jasne) */
+        .row-2-strong-buy { background-color: rgba(0, 255, 0, 0.1) !important; border-left: 4px solid #81ef81; }
+        .row-2-strong-sell { background-color: rgba(255, 0, 0, 0.1) !important; border-left: 4px solid #ff7b72; }
+
+        tr:nth-child(even) { background-color: #1c2128; }
         tr:hover { background-color: #2d333b !important; }
     </style>
 </head>
 <body>
 
-    <h2>Live Scanner: Sorted by Strength (10s refresh)</h2>
+    <h2>
+        Market Scanner PRO 
+        <span class="status-tag">Nadajnik Sygnałów Aktywny</span>
+    </h2>
+
     <table id="scannerTable">
         <thead>
             <tr>
@@ -42,17 +49,23 @@
                 <th>(4) Moving Averages</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="tableBody">
+            </tbody>
     </table>
 
     <script>
+        // PEŁNA LISTA INSTRUMENTÓW Z TWOICH ZDJĘĆ
         const instruments = [
+            // Surowce (7 od góry)
             "Brent Oil OTC", "WTI Crude Oil OTC", "Silver OTC", "Gold OTC", "Natural Gas OTC", "Palladium spot OTC", "Platinum spot OTC",
+            // Akcje (Stock)
             "Apple OTC", "Intel OTC", "Johnson & Johnson OTC", "Pfizer Inc OTC", "FedEx OTC", "GameStop Corp OTC", "Marathon Digital Holdings OTC", "VISA OTC", "Netflix OTC", "ExxonMobil OTC", "VIX OTC", "McDonald's OTC", "Palantir Technologies OTC", "Boeing Company OTC", "American Express OTC", "Citigroup Inc OTC", "Alibaba OTC", "Tesla OTC", "Cisco OTC", "Amazon OTC", "Microsoft OTC", "Coinbase Global OTC", "FACEBOOK INC OTC", "AMD OTC",
-            "AUD/JPY", "CAD/CHF", "CAD/JPY", "CHF/JPY", "EUR/AUD", "EUR/JPY", "GBP/AUD", "GBP/JPY", "USD/DZD OTC", "SAR/CNY OTC", "AUD/CHF", "GBP/CAD", "GBP/CHF", "USD/CAD", "USD/JPY", "USD/CLP OTC", "AUD/NZD OTC", "NZD/JPY OTC", "USD/MXN OTC", "USD/PKR OTC", "QAR/CNY OTC", "OMR/CNY OTC", "AUD/CAD", "EUR/USD", "NZD/USD OTC", "USD/EGP OTC", "EUR/CHF", "LBP/USD OTC", "USD/SGD OTC", "YER/USD OTC", "AUD/USD", "NGN/USD OTC", "EUR/CAD", "USD/CHF", "USD/IDR OTC", "USD/ARS OTC", "EUR/GBP OTC", "AUD/CAD OTC", "UAH/USD OTC", "KES/USD OTC", "EUR/HUF OTC", "MAD/USD OTC", "EUR/RUB OTC", "USD/COP OTC", "CHF/NOK OTC"
+            // Waluty
+            "AUD/JPY", "CAD/CHF", "CAD/JPY", "CHF/JPY", "EUR/AUD", "EUR/JPY", "GBP/AUD", "GBP/JPY", "AUD/CHF", "GBP/CAD", "GBP/CHF", "USD/CAD", "USD/JPY", "AUD/CAD", "EUR/USD", "EUR/CHF", "AUD/USD", "EUR/CAD", "USD/CHF", "GBP/USD", "EUR/GBP"
         ];
 
         const ratings = ["Strong Sell", "Sell", "Neutral", "Buy", "Strong Buy"];
+        const bc = new BroadcastChannel('trading_signals'); // Kanał komunikacji z giełdą
 
         function getRandomRating() {
             return ratings[Math.floor(Math.random() * ratings.length)];
@@ -61,39 +74,47 @@
         function updateTable() {
             const tbody = document.getElementById('tableBody');
             
-            // 1. Generujemy dane dla wszystkich instrumentów
+            // 1. Generowanie danych i ocena siły sygnału
             let data = instruments.map(name => {
                 const osc = getRandomRating();
                 const sum = getRandomRating();
                 const ma = getRandomRating();
                 
-                // Przypisanie wagi do sortowania
                 let weight = 0; 
                 let styleClass = '';
+                let signalType = null;
 
+                // LOGIKA 3x STRONG (Najmocniejsza)
                 if (osc === "Strong Buy" && sum === "Strong Buy" && ma === "Strong Buy") {
-                    weight = 4; // Top priorytet
+                    weight = 4;
                     styleClass = 'row-3-strong-buy';
+                    signalType = 'BUY';
                 } else if (osc === "Strong Sell" && sum === "Strong Sell" && ma === "Strong Sell") {
                     weight = 4;
                     styleClass = 'row-3-strong-sell';
-                } else if (sum === "Strong Buy" && ma === "Strong Buy") {
-                    weight = 3; // Jasna zieleń
+                    signalType = 'SELL';
+                } 
+                // LOGIKA 2x STRONG (Summary + MA)
+                else if (sum === "Strong Buy" && ma === "Strong Buy") {
+                    weight = 3;
                     styleClass = 'row-2-strong-buy';
                 } else if (sum === "Strong Sell" && ma === "Strong Sell") {
-                    weight = 3; // Jasna czerwień
+                    weight = 3;
                     styleClass = 'row-2-strong-sell';
-                } else {
-                    weight = 0; // Reszta
+                }
+
+                // WYSYŁANIE SYGNAŁU DO BOTA (tylko 3x Strong)
+                if (signalType) {
+                    bc.postMessage({ pair: name, type: signalType });
                 }
 
                 return { name, osc, sum, ma, weight, styleClass };
             });
 
-            // 2. Sortujemy: od najwyższej wagi (najmocniejsze sygnały) do najniższej
+            // 2. Sortowanie (najmocniejsze na górę)
             data.sort((a, b) => b.weight - a.weight);
 
-            // 3. Renderujemy tabelę
+            // 3. Renderowanie
             tbody.innerHTML = '';
             data.forEach(item => {
                 const row = document.createElement('tr');
@@ -109,6 +130,7 @@
             });
         }
 
+        // Odświeżanie co 10 sekund
         setInterval(updateTable, 10000);
         updateTable();
     </script>

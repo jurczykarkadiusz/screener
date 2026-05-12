@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Scanner Pro</title>
+    <style>
+        body { background-color: #0d1117; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; background-color: #161b22; }
+        th, td { border: 1px solid #30363d; padding: 10px; text-align: left; }
+        th { background-color: #21262d; position: sticky; top: 0; z-index: 10; }
+        
+        /* Kolory wskaźników */
+        .strong-buy { color: #00ff00; font-weight: bold; }
+        .buy { color: #81ef81; }
+        .neutral { color: #8b949e; }
+        .sell { color: #ff7b72; }
+        .strong-sell { color: #ff0000; font-weight: bold; }
+
+        /* Logika podświetlenia wiersza (3x Strong) */
+        .row-alert-green { background-color: rgba(0, 255, 0, 0.25) !important; border-left: 5px solid #00ff00; }
+        .row-alert-red { background-color: rgba(255, 0, 0, 0.25) !important; border-left: 5px solid #ff0000; }
+        
+        tr:nth-child(even) { background-color: #1c2128; }
+        tr:hover { background-color: #2d333b; }
+    </style>
+</head>
+<body>
+
+    <h2>Market Scanner (Auto-refresh 10s)</h2>
+    <table id="scannerTable">
+        <thead>
+            <tr>
+                <th>(1) Instrument</th>
+                <th>(2) Oscillators</th>
+                <th>(3) Summary</th>
+                <th>(4) Moving Averages</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        const instruments = [
+            // Commodities (7 pierwszych z obrazka)
+            "Brent Oil OTC", "WTI Crude Oil OTC", "Silver OTC", "Gold OTC", "Natural Gas OTC", "Palladium spot OTC", "Platinum spot OTC",
+            // Akcje (Stock)
+            "Apple OTC", "Intel OTC", "Johnson & Johnson OTC", "Pfizer Inc OTC", "FedEx OTC", "GameStop Corp OTC", "Marathon Digital Holdings OTC", "VISA OTC", "Netflix OTC", "ExxonMobil OTC", "VIX OTC", "McDonald's OTC", "Palantir Technologies OTC", "Boeing Company OTC", "American Express OTC", "Citigroup Inc OTC", "Alibaba OTC", "Tesla OTC", "Cisco OTC", "Amazon OTC", "Microsoft OTC", "Coinbase Global OTC", "FACEBOOK INC OTC", "AMD OTC",
+            // Waluty (Forex)
+            "AUD/JPY", "CAD/CHF", "CAD/JPY", "CHF/JPY", "EUR/AUD", "EUR/JPY", "GBP/AUD", "GBP/JPY", "USD/DZD OTC", "SAR/CNY OTC", "AUD/CHF", "GBP/CAD", "GBP/CHF", "USD/CAD", "USD/JPY", "USD/CLP OTC", "AUD/NZD OTC", "NZD/JPY OTC", "USD/MXN OTC", "USD/PKR OTC", "QAR/CNY OTC", "OMR/CNY OTC", "AUD/CAD", "EUR/USD", "NZD/USD OTC", "USD/EGP OTC", "EUR/CHF", "LBP/USD OTC", "USD/SGD OTC", "YER/USD OTC", "AUD/USD", "NGN/USD OTC", "EUR/CAD", "USD/CHF", "USD/IDR OTC", "USD/ARS OTC", "EUR/GBP OTC", "AUD/CAD OTC", "UAH/USD OTC", "KES/USD OTC", "EUR/HUF OTC", "MAD/USD OTC", "EUR/RUB OTC", "USD/COP OTC", "CHF/NOK OTC"
+        ];
+
+        const ratings = ["Strong Sell", "Sell", "Neutral", "Buy", "Strong Buy"];
+
+        function getRandomRating() {
+            return ratings[Math.floor(Math.random() * ratings.length)];
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            instruments.forEach(item => {
+                const osc = getRandomRating();
+                const sum = getRandomRating();
+                const ma = getRandomRating();
+
+                const row = document.createElement('tr');
+                
+                // Warunek: 3x "Strong Buy" lub 3x "Strong Sell"
+                if (osc === "Strong Buy" && sum === "Strong Buy" && ma === "Strong Buy") {
+                    row.className = 'row-alert-green';
+                } else if (osc === "Strong Sell" && sum === "Strong Sell" && ma === "Strong Sell") {
+                    row.className = 'row-alert-red';
+                }
+
+                row.innerHTML = `
+                    <td><strong>${item}</strong></td>
+                    <td class="${osc.toLowerCase().replace(' ', '-')}">${osc}</td>
+                    <td class="${sum.toLowerCase().replace(' ', '-')}">${sum}</td>
+                    <td class="${ma.toLowerCase().replace(' ', '-')}">${ma}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        setInterval(updateTable, 10000);
+        updateTable();
+    </script>
+</body>
+</html>

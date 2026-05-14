@@ -3,136 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Scanner PRO - Nadajnik</title>
+    <title>Dashboard Analizy Technicznej</title>
     <style>
-        body { background-color: #0d1117; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; display: flex; justify-content: space-between; }
-        .status-tag { font-size: 12px; background: #238636; padding: 4px 8px; border-radius: 10px; }
-        
-        table { width: 100%; border-collapse: collapse; background-color: #161b22; margin-top: 10px; }
-        th, td { border: 1px solid #30363d; padding: 12px; text-align: left; }
-        th { background-color: #21262d; position: sticky; top: 0; }
-
-        /* Kolory tekstów */
-        .strong-buy { color: #00ff00; font-weight: bold; }
-        .buy { color: #81ef81; }
-        .neutral { color: #8b949e; }
-        .sell { color: #ff7b72; }
-        .strong-sell { color: #ff0000; font-weight: bold; }
-
-        /* WIERSZE SPEŁNIAJĄCE WARUNKI (DO SORTOWANIA) */
-        /* 3x Strong - Najwyższy priorytet (Intensywne) */
-        .row-3-strong-buy { background-color: rgba(0, 255, 0, 0.3) !important; border-left: 6px solid #00ff00; }
-        .row-3-strong-sell { background-color: rgba(255, 0, 0, 0.3) !important; border-left: 6px solid #ff0000; }
-        
-        /* 2x Strong (Summary + MA) - Średni priorytet (Jasne) */
-        .row-2-strong-buy { background-color: rgba(0, 255, 0, 0.1) !important; border-left: 4px solid #81ef81; }
-        .row-2-strong-sell { background-color: rgba(255, 0, 0, 0.1) !important; border-left: 4px solid #ff7b72; }
-
-        tr:nth-child(even) { background-color: #1c2128; }
-        tr:hover { background-color: #2d333b !important; }
+        body {
+            background-color: #131722;
+            color: #ffffff;
+            font-family: 'Trebuchet MS', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #d1d4dc;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .widget-card {
+            background: #1e222d;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-    <h2>
-        Market Scanner PRO 
-        <span class="status-tag">Nadajnik Sygnałów Aktywny</span>
-    </h2>
-
-    <table id="scannerTable">
-        <thead>
-            <tr>
-                <th>(1) Instrument</th>
-                <th>(2) Oscillators</th>
-                <th>(3) Summary</th>
-                <th>(4) Moving Averages</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            </tbody>
-    </table>
+    <h1>Live Market Signals (Summary & Moving Averages)</h1>
+    
+    <div class="container" id="dashboard">
+        <!-- Widżety zostaną wygenerowane tutaj przez JavaScript -->
+    </div>
 
     <script>
-        // PEŁNA LISTA INSTRUMENTÓW Z TWOICH ZDJĘĆ
-        const instruments = [
-            // Surowce (7 od góry)
-            "Brent Oil OTC", "WTI Crude Oil OTC", "Silver OTC", "Gold OTC", "Natural Gas OTC", "Palladium spot OTC", "Platinum spot OTC",
-            // Akcje (Stock)
-            "Apple OTC", "Intel OTC", "Johnson & Johnson OTC", "Pfizer Inc OTC", "FedEx OTC", "GameStop Corp OTC", "Marathon Digital Holdings OTC", "VISA OTC", "Netflix OTC", "ExxonMobil OTC", "VIX OTC", "McDonald's OTC", "Palantir Technologies OTC", "Boeing Company OTC", "American Express OTC", "Citigroup Inc OTC", "Alibaba OTC", "Tesla OTC", "Cisco OTC", "Amazon OTC", "Microsoft OTC", "Coinbase Global OTC", "FACEBOOK INC OTC", "AMD OTC",
-            // Waluty
-            "AUD/JPY", "CAD/CHF", "CAD/JPY", "CHF/JPY", "EUR/AUD", "EUR/JPY", "GBP/AUD", "GBP/JPY", "AUD/CHF", "GBP/CAD", "GBP/CHF", "USD/CAD", "USD/JPY", "AUD/CAD", "EUR/USD", "EUR/CHF", "AUD/USD", "EUR/CAD", "USD/CHF", "GBP/USD", "EUR/GBP"
+        const assets = [
+            { name: "EUR/USD", symbol: "FX_IDC:EURUSD" },
+            { name: "GBP/USD", symbol: "FX_IDC:GBPUSD" },
+            { name: "EUR/JPY", symbol: "FX_IDC:EURJPY" },
+            { name: "BRENT", symbol: "ICE:UKOIL" },
+            { name: "PLATINUM", symbol: "OANDA:XPTUSD" },
+            { name: "EUR/GBP (OTC)", symbol: "FX_IDC:EURGBP" },
+            { name: "APPLE", symbol: "NASDAQ:AAPL" },
+            { name: "GOLD", symbol: "OANDA:XAUUSD" },
+            { name: "MICROSOFT", symbol: "NASDAQ:MSFT" },
+            { name: "USD/CAD", symbol: "FX_IDC:USDCAD" },
+            { name: "AMAZON", symbol: "NASDAQ:AMZN" },
+            { name: "GOOGLE", symbol: "NASDAQ:GOOGL" },
+            { name: "FACEBOOK", symbol: "NASDAQ:META" },
+            { name: "SILVER", symbol: "OANDA:XAGUSD" },
+            { name: "BTC/USD", symbol: "COINBASE:BTCUSD" },
+            { name: "USD/CHF (OTC)", symbol: "FX_IDC:USDCHF" },
+            { name: "AUD/USD (OTC)", symbol: "FX_IDC:AUDUSD" },
+            { name: "USD/JPY", symbol: "FX_IDC:USDJPY" },
+            { name: "AUD/JPY", symbol: "FX_IDC:AUDJPY" },
+            { name: "NATURAL GAS", symbol: "NYMEX:NATGAS" },
+            { name: "INTEL", symbol: "NASDAQ:INTC" }
         ];
 
-        const ratings = ["Strong Sell", "Sell", "Neutral", "Buy", "Strong Buy"];
-        const bc = new BroadcastChannel('trading_signals'); // Kanał komunikacji z giełdą
+        const container = document.getElementById('dashboard');
 
-        function getRandomRating() {
-            return ratings[Math.floor(Math.random() * ratings.length)];
-        }
-
-        function updateTable() {
-            const tbody = document.getElementById('tableBody');
+        assets.forEach(asset => {
+            const card = document.createElement('div');
+            card.className = 'widget-card';
             
-            // 1. Generowanie danych i ocena siły sygnału
-            let data = instruments.map(name => {
-                const osc = getRandomRating();
-                const sum = getRandomRating();
-                const ma = getRandomRating();
-                
-                let weight = 0; 
-                let styleClass = '';
-                let signalType = null;
+            // Unikalny ID dla każdego widżetu
+            const widgetId = `tv-widget-${asset.symbol.replace(':', '-')}`;
+            const widgetContainer = document.createElement('div');
+            widgetContainer.id = widgetId;
+            card.appendChild(widgetContainer);
+            container.appendChild(card);
 
-                // LOGIKA 3x STRONG (Najmocniejsza)
-                if (osc === "Strong Buy" && sum === "Strong Buy" && ma === "Strong Buy") {
-                    weight = 4;
-                    styleClass = 'row-3-strong-buy';
-                    signalType = 'BUY';
-                } else if (osc === "Strong Sell" && sum === "Strong Sell" && ma === "Strong Sell") {
-                    weight = 4;
-                    styleClass = 'row-3-strong-sell';
-                    signalType = 'SELL';
-                } 
-                // LOGIKA 2x STRONG (Summary + MA)
-                else if (sum === "Strong Buy" && ma === "Strong Buy") {
-                    weight = 3;
-                    styleClass = 'row-2-strong-buy';
-                } else if (sum === "Strong Sell" && ma === "Strong Sell") {
-                    weight = 3;
-                    styleClass = 'row-2-strong-sell';
-                }
-
-                // WYSYŁANIE SYGNAŁU DO BOTA (tylko 3x Strong)
-                if (signalType) {
-                    bc.postMessage({ pair: name, type: signalType });
-                }
-
-                return { name, osc, sum, ma, weight, styleClass };
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+            script.async = true;
+            
+            // Konfiguracja widżetu TradingView
+            script.innerHTML = JSON.stringify({
+                "interval": "1m",
+                "width": "100%",
+                "isTransparent": true,
+                "height": 380,
+                "symbol": asset.symbol,
+                "showIntervalTabs": true,
+                "displayMode": "single",
+                "locale": "pl",
+                "colorTheme": "dark"
             });
 
-            // 2. Sortowanie (najmocniejsze na górę)
-            data.sort((a, b) => b.weight - a.weight);
-
-            // 3. Renderowanie
-            tbody.innerHTML = '';
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                if (item.styleClass) row.className = item.styleClass;
-
-                row.innerHTML = `
-                    <td><strong>${item.name}</strong></td>
-                    <td class="${item.osc.toLowerCase().replace(' ', '-')}">${item.osc}</td>
-                    <td class="${item.sum.toLowerCase().replace(' ', '-')}">${item.sum}</td>
-                    <td class="${item.ma.toLowerCase().replace(' ', '-')}">${item.ma}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Odświeżanie co 10 sekund
-        setInterval(updateTable, 10000);
-        updateTable();
+            widgetContainer.appendChild(script);
+        });
     </script>
 </body>
 </html>

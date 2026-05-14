@@ -2,100 +2,196 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analizy Technicznej</title>
+    <title>Sygnały TradingView - Pełna Lista</title>
     <style>
         body {
-            background-color: #131722;
-            color: #ffffff;
-            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #0b0e14;
+            color: #d1d4dc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
         }
-        h1 {
+
+        .header {
             text-align: center;
-            color: #d1d4dc;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-        .widget-card {
-            background: #1e222d;
-            border-radius: 10px;
+            margin-bottom: 30px;
             padding: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border-bottom: 1px solid #2a2e39;
         }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #171b26;
+            border: 1px solid #2a2e39;
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .asset-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .asset-ticker {
+            font-size: 11px;
+            color: #787b86;
+            margin-bottom: 15px;
+        }
+
+        /* KOLORYSTYKA */
+        .signal-box {
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Twoje wymagania kolorystyczne */
+        .strong-buy { background-color: #089981; color: white; } /* Zielony */
+        .strong-sell { background-color: #f23645; color: white; } /* Czerwony */
+        .neutral-gray { background-color: #363a45; color: #b2b5be; } /* Szary dla reszty */
+
+        .ma-label {
+            margin-top: 12px;
+            font-size: 10px;
+            color: #787b86;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ma-value { font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>Live Market Signals (Summary & Moving Averages)</h1>
-    
-    <div class="container" id="dashboard">
-        <!-- Widżety zostaną wygenerowane tutaj przez JavaScript -->
-    </div>
+<div class="header">
+    <h2>Market Analysis Dashboard</h2>
+    <p id="update-time">Inicjalizacja danych...</p>
+</div>
 
-    <script>
-        const assets = [
-            { name: "EUR/USD", symbol: "FX_IDC:EURUSD" },
-            { name: "GBP/USD", symbol: "FX_IDC:GBPUSD" },
-            { name: "EUR/JPY", symbol: "FX_IDC:EURJPY" },
-            { name: "BRENT", symbol: "ICE:UKOIL" },
-            { name: "PLATINUM", symbol: "OANDA:XPTUSD" },
-            { name: "EUR/GBP (OTC)", symbol: "FX_IDC:EURGBP" },
-            { name: "APPLE", symbol: "NASDAQ:AAPL" },
-            { name: "GOLD", symbol: "OANDA:XAUUSD" },
-            { name: "MICROSOFT", symbol: "NASDAQ:MSFT" },
-            { name: "USD/CAD", symbol: "FX_IDC:USDCAD" },
-            { name: "AMAZON", symbol: "NASDAQ:AMZN" },
-            { name: "GOOGLE", symbol: "NASDAQ:GOOGL" },
-            { name: "FACEBOOK", symbol: "NASDAQ:META" },
-            { name: "SILVER", symbol: "OANDA:XAGUSD" },
-            { name: "BTC/USD", symbol: "COINBASE:BTCUSD" },
-            { name: "USD/CHF (OTC)", symbol: "FX_IDC:USDCHF" },
-            { name: "AUD/USD (OTC)", symbol: "FX_IDC:AUDUSD" },
-            { name: "USD/JPY", symbol: "FX_IDC:USDJPY" },
-            { name: "AUD/JPY", symbol: "FX_IDC:AUDJPY" },
-            { name: "NATURAL GAS", symbol: "NYMEX:NATGAS" },
-            { name: "INTEL", symbol: "NASDAQ:INTC" }
-        ];
+<div class="grid" id="main-grid">
+    <!-- Tutaj trafi 25 kart -->
+</div>
 
-        const container = document.getElementById('dashboard');
+<script>
+    // Pełna lista 25 instrumentów zgodnie z Twoim postem
+    const rawAssets = {
+        "EUR/USD": ["FX_IDC", "EURUSD"],
+        "GBP/USD": ["FX_IDC", "GBPUSD"],
+        "EUR/JPY": ["FX_IDC", "EURJPY"],
+        "BRENT": ["ICE", "UKOIL"],
+        "PLATINUM": ["OANDA", "XPTUSD"],
+        "EUR/GBP (OTC)": ["FX_IDC", "EURGBP"],
+        "APPLE": ["NASDAQ", "AAPL"],
+        "GOLD": ["OANDA", "XAUUSD"],
+        "MICROSOFT": ["NASDAQ", "MSFT"],
+        "USD/CAD": ["FX_IDC", "USDCAD"],
+        "AMAZON": ["NASDAQ", "AMZN"],
+        "GOOGLE": ["NASDAQ", "GOOGL"],
+        "FACEBOOK": ["NASDAQ", "META"],
+        "SILVER": ["OANDA", "XAGUSD"],
+        "EUR/USD (OTC)": ["FX_IDC", "EURUSD"],
+        "GBP/USD (OTC)": ["FX_IDC", "GBPUSD"],
+        "GOLD (OTC)": ["OANDA", "XAUUSD"],
+        "BTC/USD": ["COINBASE", "BTCUSD"],
+        "USD/CHF (OTC)": ["FX_IDC", "USDCHF"],
+        "AUD/USD (OTC)": ["FX_IDC", "AUDUSD"],
+        "USD/JPY": ["FX_IDC", "USDJPY"],
+        "AUD/USD": ["FX_IDC", "AUDUSD"],
+        "AUD/JPY": ["FX_IDC", "AUDJPY"],
+        "NATURAL GAS": ["NYMEX", "NATGAS"],
+        "INTEL": ["NASDAQ", "INTC"]
+    };
 
-        assets.forEach(asset => {
-            const card = document.createElement('div');
-            card.className = 'widget-card';
-            
-            // Unikalny ID dla każdego widżetu
-            const widgetId = `tv-widget-${asset.symbol.replace(':', '-')}`;
-            const widgetContainer = document.createElement('div');
-            widgetContainer.id = widgetId;
-            card.appendChild(widgetContainer);
-            container.appendChild(card);
-
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
-            script.async = true;
-            
-            // Konfiguracja widżetu TradingView
-            script.innerHTML = JSON.stringify({
-                "interval": "1m",
-                "width": "100%",
-                "isTransparent": true,
-                "height": 380,
-                "symbol": asset.symbol,
-                "showIntervalTabs": true,
-                "displayMode": "single",
-                "locale": "pl",
-                "colorTheme": "dark"
+    async function fetchMarketData() {
+        const tickers = Object.values(rawAssets).map(v => `${v[0]}:${v[1]}`);
+        
+        try {
+            const response = await fetch("https://scanner.tradingview.com/forex/scan", {
+                method: "POST",
+                body: JSON.stringify({
+                    "symbols": { "tickers": tickers },
+                    "columns": ["recommendation", "MA.Recommendation", "description"]
+                })
             });
+            const json = await response.json();
+            renderDashboard(json.data);
+            document.getElementById('update-time').innerText = "Ostatnia aktualizacja: " + new Date().toLocaleTimeString();
+        } catch (err) {
+            console.error("Błąd pobierania danych:", err);
+        }
+    }
 
-            widgetContainer.appendChild(script);
+    function getStyleClass(val) {
+        if (val >= 0.5) return "strong-buy";
+        if (val <= -0.5) return "strong-sell";
+        return "neutral-gray"; // Dla Buy, Sell i Neutral
+    }
+
+    function getLabel(val) {
+        if (val >= 0.5) return "Strong Buy";
+        if (val > 0.1 && val < 0.5) return "Buy";
+        if (val <= -0.5) return "Strong Sell";
+        if (val < -0.1 && val > -0.5) return "Sell";
+        return "Neutral";
+    }
+
+    function renderDashboard(data) {
+        const grid = document.getElementById('main-grid');
+        grid.innerHTML = '';
+
+        Object.keys(rawAssets).forEach((name, index) => {
+            const result = data[index].d;
+            const summaryVal = result[0];
+            const maVal = result[1];
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const summaryClass = getStyleClass(summaryVal);
+            const summaryLabel = getLabel(summaryVal);
+            const maLabel = getLabel(maVal);
+
+            card.innerHTML = `
+                <div>
+                    <div class="asset-title">${name}</div>
+                    <div class="asset-ticker">${rawAssets[name][0]}:${rawAssets[name][1]}</div>
+                </div>
+                
+                <div class="signal-box ${summaryClass}">
+                    ${summaryLabel}
+                </div>
+
+                <div class="ma-label">
+                    <span>Moving Averages:</span>
+                    <span class="ma-value" style="color: ${maVal >= 0.5 ? '#089981' : (maVal <= -0.5 ? '#f23645' : '#787b86')}">
+                        ${maLabel}
+                    </span>
+                </div>
+            `;
+            grid.appendChild(card);
         });
-    </script>
+    }
+
+    // Uruchomienie i interwał (co 15 sekund)
+    fetchMarketData();
+    setInterval(fetchMarketData, 15000);
+</script>
+
 </body>
 </html>
